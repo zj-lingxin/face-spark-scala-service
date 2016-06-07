@@ -1,6 +1,6 @@
 package com.zjlp.face.spark.base.factory
 
-import com.zjlp.face.spark.base.{JdbcDF, SQLContextSingleton, ISparkBaseFactory}
+import com.zjlp.face.spark.base.{ISparkBaseFactory, JdbcDF, SQLContextSingleton}
 import org.apache.spark.sql.SQLContext
 
 /**
@@ -11,14 +11,14 @@ class SparkBaseFactoryImpl extends ISparkBaseFactory{
    * 获取sqlContext
    * @return 返回值
    */
-  override def getSQLContext: SQLContext = {
+  def getSQLContext: SQLContext = {
     SQLContextSingleton.getInstance()
   }
 
   /**
    * 更新数据源
    */
-  override def updateSQLContext: Unit = {
+  def updateSQLContext: Unit = {
     JdbcDF.load("(select username,loginAccount,userId from view_ofroster where sub=3) ofRoster")
       .registerTempTable("ofRoster")
   }

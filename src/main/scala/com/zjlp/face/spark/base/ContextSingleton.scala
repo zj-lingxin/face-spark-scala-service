@@ -1,11 +1,12 @@
 package com.zjlp.face.spark.base
 
+import com.zjlp.face.spark.bean.{PersonRelation, CommonFriendNum}
 import org.apache.spark.sql.SQLContext
-import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.{Logging, SparkConf, SparkContext}
 
 object SQLContextSingleton {
   private var instance: SQLContext = _
+
   def getInstance(sparkContext: SparkContext = SparkContextSingleton.getInstance): SQLContext = {
     if (instance == null) {
       instance = new SQLContext(sparkContext)
@@ -14,22 +15,46 @@ object SQLContextSingleton {
   }
 }
 
-object SparkContextSingleton {
+object SparkContextSingleton extends Logging {
   private var instance: SparkContext = _
+
+  private def showSparkConf() = {
+    instance.getConf.getAll.foreach { prop =>
+      logInfo(prop.toString())
+    }
+  }
+
+  private def getSparkConf = {
+    val conf = new SparkConf()
+    Array(
+      "spark.master",
+      "spark.app.name",
+      "spark.sql.shuffle.partitions",
+      "spark.executor.memory",
+      "spark.executor.cores",
+      "spark.cores.max",
+      "spark.speculation",
+      "spark.driver.memory",
+      "spark.driver.cores",
+      "spark.table.numPartitions",
+      "spark.default.parallelism"
+    ).foreach { prop =>
+      conf.set(prop, Props.get(prop))
+    }
+
+    conf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+    conf.registerKryoClasses(Array(
+      classOf[CommonFriendNum],
+      classOf[PersonRelation]
+    ))
+
+    conf
+  }
+
   def getInstance = {
     if (instance == null) {
-      val conf = new SparkConf().setAppName("").setMaster("local[10]")
-      conf.set("spark.sql.shuffle.partitions","48")
-      conf.set("spark.executor.memory","8g")
-      conf.set("spark.executor.cores","2")
-      conf.set("spark.cores.max","9")
-      conf.set("spark.speculation","true")
-      conf.set("spark.driver.memory","4g")
-      conf.set("spark.driver.cores","2")
-      conf.set("spark.table.numPartitions","48")
-      conf.set("spark.default.parallelism","48")
-
-      instance = new SparkContext(conf)
+      instance = new SparkContext(getSparkConf)
+      showSparkConf()
     }
     instance
   }

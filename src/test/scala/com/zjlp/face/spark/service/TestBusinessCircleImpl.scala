@@ -1,10 +1,8 @@
 package com.zjlp.face.spark.service
 
 import java.util
-
 import com.zjlp.face.spark.base.factory.SparkBaseFactoryImpl
 import com.zjlp.face.spark.service.impl.BusinessCircleImpl
-
 
 object TestBusinessCircleImpl {
   val bc = new BusinessCircleImpl()

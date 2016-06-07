@@ -1,4 +1,4 @@
-package com.zjlp.face.spark.test
+package com.zjlp.face.spark.service
 
 import java.util
 
@@ -10,7 +10,7 @@ import org.apache.spark.streaming.{Seconds, StreamingContext}
 
 import scala.collection.JavaConversions._
 
-object ServiceImpl {
+object SparkStreamingTest {
   def searchPersonRelation(loginAccount: String) = {
     //测试数据，以后传入
     val userIds = new util.ArrayList[String]()
